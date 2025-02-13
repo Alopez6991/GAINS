@@ -11,4 +11,3 @@
 ### Overall Contribution
 ![Overall Stats](Stats/stats_overall_2025-02-12.png)
 
-These graphs are automatically updated daily after each push.

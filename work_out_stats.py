@@ -3,9 +3,14 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import datetime  # Ensure datetime is fully accessible
+import os
 
 # File path to the CSV file
 csv_file = 'GAINS.csv'
+
+# Directory to save images
+stats_dir = 'Stats'
+os.makedirs(stats_dir, exist_ok=True)
 
 def get_date():
     today_input = input("Is this for today? (Y/N): ").strip().lower()
@@ -69,9 +74,9 @@ def generate_heatmaps(date):
     axes[2].set_title(f'van Breug-o-nauts Lab Gains ({f_lab_pivot.values.sum()} total)')
 
     plt.tight_layout()
-    plt.savefig(f'gains_{date}.png')
+    plt.savefig(os.path.join(stats_dir,f'gains_{date}.png'))
     plt.close()
-    print(f"Heatmaps saved as gains_{date}.png")
+    print(f"Heatmaps saved as {stats_dir}/gains_{date}.png")
 
 
 def format_autopct(pct, allvals):
@@ -146,10 +151,10 @@ def generate_stats(date):
     ax_combined.set_title(f'Overall Contribution by All Lab Members ({combined_totals.sum()} total)')
 
     plt.tight_layout()
-    fig.savefig(f'stats_{date}.png')  # Save the main figure with all subplots
-    fig_combined.savefig(f'stats_overall_{date}.png')  # Save the combined contribution chart separately
+    fig.savefig(os.path.join(stats_dir,f'stats_{date}.png'))  # Save the main figure with all subplots
+    fig_combined.savefig(os.path.join(stats_dir,f'stats_overall_{date}.png'))  # Save the combined contribution chart separately
     plt.close('all')
-    print(f"Statistics saved as stats_{date}.png and stats_overall_{date}.png")
+    print(f"Statistics saved as {stats_dir}/stats_{date}.png \n {stats_dir}/stats_overall_{date}.png")
 
 
 if __name__ == '__main__':
