@@ -109,13 +109,16 @@ def generate_stats(date):
 
     # Assign colors by name for consistency
     n_names = n_lab_data['name'].unique()
+    # print(n_lab_data)
     f_names = f_lab_data['name'].unique()
     name_colors = {name: color for name, color in zip(n_names, sns.color_palette("Reds", len(n_names)))}
     name_colors.update({name: color for name, color in zip(f_names, sns.color_palette("Blues", len(f_names)))})
 
     # First Row: Total gains by workout type for each lab
-    n_totals = n_lab_data.groupby('workout_type')['value'].sum()
-    f_totals = f_lab_data.groupby('workout_type')['value'].sum()
+    n_lab_data['value'] = pd.to_numeric(n_lab_data['value'], errors='coerce')
+    n_totals = n_lab_data.groupby('workout_type')['value'].sum().astype(int)
+    # print(n_lab_data.groupby('workout_type')['value'].sum())
+    f_totals = f_lab_data.groupby('workout_type')['value'].sum().astype(int)
 
     axes[0, 0].pie(n_totals, labels=n_totals.index, autopct=lambda pct: format_autopct(pct, n_totals), colors=['#FF9999', '#FF6666', '#FF3333'])
     axes[0, 0].set_title(f'Nair-o-dynamics Total Gains by Workout ({n_totals.sum()} total)')
