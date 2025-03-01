@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import datetime  # Ensure datetime is fully accessible
 import os
+import numpy as np
 
 # File path to the CSV file
 csv_file = 'GAINS.csv'
@@ -147,7 +148,34 @@ def generate_stats(date):
     combined_totals = daily_data.groupby('name')['value'].sum()
 
     fig_combined, ax_combined = plt.subplots(figsize=(8, 8))
-    ax_combined.pie(combined_totals, labels=combined_totals.index, autopct=lambda pct: format_autopct(pct, combined_totals), colors=[name_colors[name] for name in combined_totals.index])
+
+    # Create an alternating pctdistance list (1.2, 1.4, 1.2, 1.4, ...)
+    pct_distances = [.8 if i % 2 == 0 else .6 for i in range(len(combined_totals))]
+    label_distances = [1.15 if i % 2 == 0 else 1.025 for i in range(len(combined_totals))]
+
+    # Create the pie chart
+    wedges, texts, autotexts = ax_combined.pie(
+        combined_totals, labels=None,  # Remove default labels so we manually position them
+        autopct=lambda pct: format_autopct(pct, combined_totals),
+        colors=[name_colors[name] for name in combined_totals.index]
+    )
+
+    # Adjust the position of percentage labels using alternating pct_distances
+    for i, autotext in enumerate(autotexts):
+        angle = (wedges[i].theta2 + wedges[i].theta1) / 2  # Get middle angle of the wedge
+        x = pct_distances[i] * np.cos(np.deg2rad(angle))  # Adjust X using cosine
+        y = pct_distances[i] * np.sin(np.deg2rad(angle))  # Adjust Y using sine
+        autotext.set_position((x, y))  # Apply new position
+
+    # Adjust the position of names using alternating label_distances
+    for i, (text, name) in enumerate(zip(texts, combined_totals.index)):
+        angle = (wedges[i].theta2 + wedges[i].theta1) / 2  # Middle angle of wedge
+        x = label_distances[i] * np.cos(np.deg2rad(angle))  # Adjust X for label
+        y = label_distances[i] * np.sin(np.deg2rad(angle))  # Adjust Y for label
+        text.set_position((x, y))  # Move the name label outward
+        text.set_text(name)  # Set the correct name
+
+
     ax_combined.set_title(f'Overall Contribution by All Lab Members ({combined_totals.sum()} total)')
 
     plt.tight_layout()

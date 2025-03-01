@@ -14,9 +14,39 @@ def get_latest_date():
     latest_date = df['date'].max().strftime('%Y-%m-%d')
     return latest_date
 
+def get_beast_of_the_day(latest_date):
+    """Finds the person with the highest total workout gains."""
+    df = pd.read_csv(csv_file)
+    
+    # Filter for the latest date
+    daily_data = df[df['date'] == latest_date]
+
+    # Sum values per person
+    total_gains = daily_data.groupby('name')['value'].sum()
+    beast_name = total_gains.idxmax()  # Find the person with the highest total
+
+    # Get individual stats for the beast
+    beast_stats = daily_data[daily_data['name'] == beast_name].groupby('workout_type')['value'].sum()
+    pushups = beast_stats.get('Push-Ups', 0)
+    squats = beast_stats.get('Squats', 0)
+    situps = beast_stats.get('Sit-Ups', 0)
+    total = pushups + squats + situps
+
+    return beast_name, pushups, squats, situps, total
+
 def update_readme(latest_date):
-    """Updates the README.md file with the latest images from the Stats directory."""
+    """Updates the README.md file with the latest images from the Stats directory and the BEAST OF US."""
+    
+    # Get the Beast of the Day
+    beast_name, pushups, squats, situps, total = get_beast_of_the_day(latest_date)
+
     readme_content = f"""# GAINS Tracker
+
+## 🏆 Today **{beast_name}** is the **BEAST OF US** 🏆  
+### {pushups} Push-Ups | {squats} Squats | {situps} Sit-Ups  
+**(Total Gains = {total})**
+
+---
 
 ## Latest Progress - {latest_date}
 
@@ -35,12 +65,12 @@ These graphs are automatically updated daily after each push.
     with open(readme_file, "w") as file:
         file.write(readme_content)
 
-    print(f"README.md updated with images from {latest_date}")
+    print(f"README.md updated with images from {latest_date} and BEAST OF US: {beast_name}")
 
 def commit_and_push():
     """Commits and pushes the updated README to GitHub."""
     os.system("git add README.md")
-    os.system(f"git commit -m 'Update README with latest stats'")
+    os.system(f"git commit -m 'Update README with latest stats and BEAST OF US'")
     os.system("git push origin main")
 
 if __name__ == "__main__":
