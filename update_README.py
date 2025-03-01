@@ -42,13 +42,15 @@ def update_readme(latest_date):
 
     readme_content = f"""# GAINS Tracker
 
+## Latest Progress - {latest_date}
+
+---
+
 ## 🏆 Today **{beast_name}** is the **BEAST OF US** 🏆  
 ### {pushups} Push-Ups | {squats} Squats | {situps} Sit-Ups  
 **(Total Gains = {total})**
 
 ---
-
-## Latest Progress - {latest_date}
 
 ### Overall Workout Gains
 ![Gains]({stats_dir}/gains_{latest_date}.png)
